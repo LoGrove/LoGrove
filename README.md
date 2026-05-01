@@ -8,3 +8,4 @@ This repository is the top-level-hub for the LoGrove Project.
 Actual source code is managed in the following repositories:
 * Server : [LoGrove-server](https://github.com/kgw2611/LoGrove-server.git)
 * Web : [LoGrove-web](https://github.com/kgw2611/LoGrove-web.git)
+* App : [Logrove-app](https://github.com/kgw2611/LoGrove-app.git)
