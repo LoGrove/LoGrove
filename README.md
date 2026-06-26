@@ -10,8 +10,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/LoGrove/LoGrove">Project Hub</a>
-  ·
   <a href="https://github.com/kgw2611/LoGrove-web/releases/tag/v0.9">Web Release</a>
   ·
   <a href="https://github.com/kgw2611/LoGrove-server/releases/tag/v0.9">Server Release</a>
@@ -145,24 +143,6 @@ LoGrove-server
    └─ user
 ```
 
-## 실행 방법
-
-### Backend
-
-```bash
-cd LoGrove-server
-./gradlew bootRun
-```
-
-로컬 실행 시 `application-secret.yaml`에 데이터베이스 비밀번호, JWT secret, Gemini API key 등 민감 정보를 별도로 설정해야 합니다.
-
-### Frontend
-
-```bash
-cd LoGrove-web
-npm install
-npm run dev
-```
 
 프론트엔드는 Vite 개발 서버로 실행되며, API 요청은 Spring Boot 백엔드 서버와 연동됩니다.
 
