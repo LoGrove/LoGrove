@@ -48,6 +48,12 @@ LoGrove는 사진 취미에 특화된 웹 기반 커뮤니티 서비스입니다
 
 ![Gallery write](./readme_assets/gallery_write.png)
 
+### CLIP 기반 자동태깅 서버
+
+자동태깅 기능은 별도 Python 서버인 [logroveTagger](https://github.com/eve-ho/logroveTagger)에서 처리합니다. 사용자가 이미지를 업로드하면 FastAPI 서버의 `/api/analyze-tags` 엔드포인트가 임시 파일로 저장한 뒤 OpenAI CLIP `ViT-B/32` 모델로 이미지와 태그 프롬프트의 유사도를 계산합니다.
+
+태그 후보는 피사체, 구도, 촬영법, 색감, 시간, 기타 카테고리로 구성되어 있으며, `THRESHOLD = 0.025`, 최대 후보 10개, 최종 태그 5개 기준으로 필터링됩니다. 최종 결과는 카테고리 우선순위에 따라 정렬되어 `{"tags": [...]}` 형태로 백엔드와 프론트엔드에 전달됩니다.
+
 ### 단계별 사진 학습 미션
 
 사진 이론, 구도, 카메라 조작법 등 주제별 미션을 난이도 단계에 따라 제공합니다. 이전 문제를 해결해야 다음 단계로 이동할 수 있어 학습 흐름을 유지할 수 있습니다.
@@ -68,7 +74,9 @@ LoGrove는 사진 취미에 특화된 웹 기반 커뮤니티 서비스입니다
 
 ## 시스템 아키텍처
 
-LoGrove는 프론트엔드, 백엔드, AI 태깅 서버, 데이터베이스, 외부 Gemini API를 역할별로 분리했습니다. 프론트엔드는 React 기반 웹 화면을 담당하고, Spring Boot 백엔드는 인증, 게시글, 이미지 저장, 미션 처리 등 주요 비즈니스 로직을 수행합니다. 이미지 태깅은 FastAPI 기반 AI 서버에서 OpenCV와 CLIP으로 처리하며, 사진 평가 미션은 Gemini API를 호출해 결과를 제공합니다.
+LoGrove는 프론트엔드, 백엔드, AI 태깅 서버, 데이터베이스, 외부 Gemini API를 역할별로 분리했습니다. 프론트엔드는 React 기반 웹 화면을 담당하고, Spring Boot 백엔드는 인증, 게시글, 이미지 저장, 미션 처리 등 주요 비즈니스 로직을 수행합니다.
+
+자동태깅은 FastAPI 기반 `logroveTagger` 서버가 담당합니다. 해당 서버는 PyTorch와 OpenAI CLIP `ViT-B/32` 모델을 사용해 업로드 이미지와 태그 설명 문장의 유사도를 계산하고, 피사체/구도/촬영법/색감/시간/기타 카테고리에서 최대 5개의 추천 태그를 반환합니다. 사진 제출형 미션 평가는 백엔드가 Gemini API를 호출해 점수와 피드백을 받아오는 구조입니다.
 
 ![LoGrove architecture](./readme_assets/architecture.png)
 
@@ -101,6 +109,18 @@ LoGrove는 프론트엔드, 백엔드, AI 태깅 서버, 데이터베이스, 외
 | API Docs | Springdoc OpenAPI / Swagger |
 | Image | Thumbnailator, WebP ImageIO |
 | AI 연동 | Gemini API, CLIP 태깅 서버 연동 |
+
+### AI Tagging Service
+
+| 분류 | 기술 |
+| --- | --- |
+| Repository | [eve-ho/logroveTagger](https://github.com/eve-ho/logroveTagger) |
+| Language / Framework | Python 3.9+, FastAPI |
+| Model | OpenAI CLIP `ViT-B/32` |
+| Deep Learning | PyTorch |
+| Image Processing | Pillow |
+| API | `POST /api/analyze-tags` |
+| Response | `{"tags": ["태그1", "태그2", "..."]}` |
 
 ### Infra / DevOps
 
@@ -143,6 +163,10 @@ LoGrove-server
    ├─ storage
    ├─ tag
    └─ user
+
+logroveTagger
+├─ main.py
+└─ image_tagger.py
 ```
 
 ## 실행 방법
@@ -165,6 +189,20 @@ npm run dev
 ```
 
 프론트엔드는 Vite 개발 서버로 실행되며, API 요청은 Spring Boot 백엔드 서버와 연동됩니다.
+
+### AI Tagging Server
+
+```bash
+cd logroveTagger
+pip install torch torchvision clip pillow fastapi uvicorn python-multipart
+python main.py
+```
+
+자동태깅 서버 실행 후 Swagger UI는 아래 주소에서 확인할 수 있습니다.
+
+```text
+http://localhost:8000/docs
+```
 
 ## API 문서
 
@@ -190,4 +228,5 @@ http://localhost:8080/swagger-ui/index.html
 
 - [LoGrove Web v0.9](https://github.com/kgw2611/LoGrove-web/releases/tag/v0.9)
 - [LoGrove Server v0.9](https://github.com/kgw2611/LoGrove-server/releases/tag/v0.9)
+- [logroveTagger](https://github.com/eve-ho/logroveTagger)
 - [The Role of Gamification in Enhancing User Engagement on Social Media](https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE12031187)
