@@ -184,7 +184,6 @@ http://localhost:8080/swagger-ui/index.html
 | 김호진 | 백엔드, Spring Boot API, REST API, 인증/인가 |
 | 문재원 | 백엔드, DB 설계, 미션/이미지 서버 로직, AI 사진 평가 연동 |
 
-![Team roles](./readme_assets/team_roles.png)
 
 ## 참고 자료
 
